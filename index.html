@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=600, height=600, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Meta Ray-Ban Display 用のお絵かきロジック（ノノグラム）パズル。数字ヒントを頼りにD-padでマスを塗り、正解すると視界の中にドット絵が浮かび上がります。5×5と10×10の全6問、ベストタイム記録つき。">
+  <meta name="mrbd-web-app-capable" content="yes">
+  <title>グラスロジック — Glass Logic</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ホーム（パズルえらび） -->
+    <div id="home" class="screen">
+      <header class="header">
+        <h1>🧩 グラスロジック</h1>
+        <span class="header-meta" id="home-meta">おえかきロジック</span>
+      </header>
+      <div class="content home-content">
+        <p class="home-lead">数字のヒントでマスをぬると、絵があらわれる。<br>↑↓でえらんでタップ。</p>
+        <div class="puzzle-list scroll-fade" id="puzzle-list"></div>
+      </div>
+    </div>
+
+    <!-- プレイ -->
+    <div id="play" class="screen hidden">
+      <header class="header slim">
+        <h1 id="play-title">？？？</h1>
+        <span class="header-meta" id="play-timer">０:００</span>
+      </header>
+      <div class="content play-content">
+        <p class="hint-note">タップで ぬる → ✕ → けす。↓の端で「やめる」へ</p>
+        <div class="board focusable" id="board" tabindex="0" data-action="noop"></div>
+        <button class="quit-btn focusable" data-action="quit-play">× やめてもどる</button>
+      </div>
+    </div>
+
+    <!-- クリア -->
+    <div id="clear" class="screen hidden">
+      <div class="content clear-content">
+        <div class="clear-art" id="clear-art"></div>
+        <h2 class="clear-title" id="clear-title">🎉 ハート！</h2>
+        <p class="clear-sub" id="clear-sub"></p>
+        <div class="rail">
+          <button class="rail-btn focusable" data-action="next-puzzle" id="next-puzzle-btn">つぎのパズルへ →</button>
+          <button class="rail-btn ghost focusable" data-action="go-home">ホームへ</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

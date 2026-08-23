@@ -1,0 +1,257 @@
+/* グラスロジック — Glass Logic
+   600×600 加算式ディスプレイ用。#000000 は透明（ページ背景のみ）、
+   UI面は暗グレーで発光させて視認させる。 */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 600px;
+  height: 600px;
+  overflow: hidden;
+  background: #000000; /* additive display: transparent */
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  user-select: none;
+}
+
+#app { width: 600px; height: 600px; padding: 8px; }
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.hidden { display: none !important; }
+
+/* ---------- ヘッダー ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 64px;
+  padding: 0 20px;
+  margin-top: 12px;
+  background: #101218;
+  border: 1px solid #262a33;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.header.slim { height: 52px; margin-top: 8px; }
+.header h1 {
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-meta {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7ee7ff;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- コンテンツ ---------- */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 8px;
+  min-height: 0;
+}
+
+.home-lead {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #b0b3b8;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.hint-note {
+  font-size: 13px;
+  color: #b0b3b8;
+  flex-shrink: 0;
+}
+
+/* ---------- ホーム：パズル一覧 ---------- */
+.puzzle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 560px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px;
+}
+.puzzle-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 62px;
+  padding: 6px 18px;
+  flex-shrink: 0;
+  font-family: inherit;
+  text-align: left;
+  background: #14161d;
+  color: #ffffff;
+  border: 1px solid #2c313c;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 300ms cubic-bezier(0.6, 0, 0.4, 1),
+              background 300ms, box-shadow 300ms;
+}
+.pi-emoji { font-size: 26px; flex-shrink: 0; }
+.pi-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pi-name { font-size: 20px; font-weight: 700; }
+.pi-sub { font-size: 12.5px; color: #b0b3b8; }
+.pi-best { font-size: 13.5px; font-weight: 700; color: #7ee7ff; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- 盤面 ---------- */
+.play-content { gap: 8px; }
+
+.board {
+  --cell: 58px;
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  background: #101218;
+  border: 1px solid #262a33;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+.board.big { --cell: 34px; }
+
+.bh-corner { }
+.bh {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: #7ee7ff;
+  font-weight: 800;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 300ms;
+}
+.board.big .bh { font-size: 13px; gap: 3px; }
+.bh.row { padding-right: 8px; }
+.bh.col { flex-direction: column; justify-content: flex-end; padding-bottom: 6px; }
+.bh.ok { opacity: 0.28; }
+
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1d26;
+  border: 1px solid #2c313c;
+  border-radius: 6px;
+  font-size: calc(var(--cell) * 0.45);
+  font-weight: 800;
+  color: #6a7080;
+  transition: background 150ms;
+}
+.board.big .cell { border-radius: 4px; }
+.cell.edge-b { border-bottom: 2px solid #3d4452; }
+.cell.edge-r { border-right: 2px solid #3d4452; }
+.cell.fill { background: #7ee7ff; border-color: #7ee7ff; }
+.cell.cursor {
+  box-shadow: 0 0 0 3px #ffd868, 0 0 14px rgba(255, 216, 104, 0.6);
+  z-index: 1;
+}
+.cell.fill.cursor { background: #a5efff; }
+
+.quit-btn {
+  height: 42px;
+  padding: 0 18px;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  background: #14161d;
+  color: #b0b3b8;
+  border: 1px solid #2c313c;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* ---------- クリア ---------- */
+.clear-content { justify-content: center; gap: 14px; }
+
+.clear-art {
+  --art-cell: 30px;
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  background: #101218;
+  border: 1px solid #262a33;
+  border-radius: 16px;
+  animation: pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+.clear-art.big { --art-cell: 17px; }
+.art-px {
+  width: var(--art-cell);
+  height: var(--art-cell);
+  border-radius: 3px;
+  background: #14161d;
+}
+@keyframes pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.clear-title { font-size: 28px; font-weight: 800; letter-spacing: 0.04em; }
+.clear-sub { font-size: 16px; color: #7ee7ff; font-variant-numeric: tabular-nums; }
+
+/* ---------- ボタン列 ---------- */
+.rail {
+  display: flex;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.rail-btn {
+  height: 60px;
+  padding: 0 26px;
+  white-space: nowrap;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  background: #132a30;
+  color: #7ee7ff;
+  border: 1px solid #2f6f8a;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: transform 300ms cubic-bezier(0.6, 0, 0.4, 1), box-shadow 300ms;
+}
+.rail-btn.ghost {
+  background: #14161d;
+  color: #e4e6eb;
+  border-color: #2c313c;
+}
+
+/* ---------- スクロールのスクリム ---------- */
+.scroll-fade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 26px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 26px), transparent 100%);
+}
+
+/* ---------- フォーカス ---------- */
+.focusable:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #7ee7ff, 0 0 22px rgba(126, 231, 255, 0.45);
+  background: #1d222c;
+}
+.board.focusable:focus { background: #12151c; }
+.puzzle-item.focusable:focus { transform: scale(0.97); }
+.rail-btn:focus { background: #1a3a44; }
+.rail-btn.ghost:focus, .quit-btn:focus { background: #1d222c; }
